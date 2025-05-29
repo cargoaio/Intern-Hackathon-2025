@@ -106,7 +106,7 @@ Winners will be selected based on the combined score across these areas.
 
 ## 📅 Timeline
 
-- **Kick-off:** May 29, 2025  
+- **Kick-off:** May 30, 2025  
 - **Submission Deadline:** June 10, 2025, 23:59 IST  
 - **Winners Announced:** June 16, 2025  
 

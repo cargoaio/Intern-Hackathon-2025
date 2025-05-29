@@ -114,7 +114,7 @@ Winners will be selected based on the combined score across these areas.
 
 ## 📜 Rules & Guidelines
 
-- Teams of **1–3** participants  
+- Teams of **1** participants  
 - All code must be original or properly attributed  
 - No plagiarism—automated and manual checks will be performed  
 - Keep your fork **public** until winners are announced  
@@ -135,6 +135,6 @@ Winners will be selected based on the combined score across these areas.
 If you have any questions, please:
 
 - Open an **issue** in this repo  
-- Email us at **hackathon@cargoa.io**  
+- Email us at **hr@cargoa.io**  
 
 Good luck, and happy hacking! 🚀  

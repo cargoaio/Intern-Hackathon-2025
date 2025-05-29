@@ -1,70 +1,140 @@
-# Intern-Hackathon-2025
-
 # 📬 Email-Folder AI Agent Hackathon
 
-Welcome to the **Email-Folder AI Agent Hackathon**! 🎉 In this challenge, you’ll build an intelligent agent that reads customer emails from a folder, understands their content, extracts attachments (mostly PDFs), runs a document extractor, and produces a human-readable summary for confirmation via a simple web front-end.
+Welcome to the **Email-Folder AI Agent Hackathon**! 🎉 In this challenge, you’ll build an intelligent agent that:
+
+1. Reads customer emails from a designated folder  
+2. Parses sender, subject, body text, and attachments (mostly PDFs)  
+3. Invokes a document‐extraction API or model to pull structured content  
+4. Generates a concise summary of both email context and extracted document details  
+5. (Optional) Presents the summary on a lightweight web front‐end for user confirmation  
 
 ---
 
 ## 🏆 Challenge Overview
 
-Many enterprises receive dozens (or hundreds) of emails per day, each potentially containing valuable documents. Your task is to automate the end-to-end pipeline:
+Many businesses receive dozens—or even hundreds—of emails per day, each potentially containing valuable documents. Your goal is to automate this pipeline end to end:
 
-1. **Ingest**: Read raw `.eml` or `.msg` files from a given folder.
-2. **Parse**: Extract sender, subject, body text, and all attachments.
-3. **Extract**: Invoke a document-extraction API (or your own model) to pull structured content from PDFs.
-4. **Summarize & Confirm**: Produce a concise summary of email context and extracted document details, ready for user confirmation on a web front-end.
-5. **Deliver**: Package your solution in a GitHub repo, including a flowchart of your architecture and instructions for running locally.
+1. **Ingest**: Load raw `.eml` or `.msg` files from a given folder  
+2. **Parse**: Extract metadata (sender, subject), body text, and attachments  
+3. **Extract**: Feed attachments into a document‐extraction API or your own model to obtain structured data  
+4. **Summarize & Confirm**: Produce a human‐readable summary (JSON or HTML) of email + document contents, ready for user confirmation via a simple web UI  
+5. **Deliver**: Package your solution into a GitHub repo, complete with a flowchart and clear run instructions  
 
 ---
 
 ## 🎯 What We’re Looking For
 
-- **Correctness & Completeness**  
-  - All emails in the folder are processed.  
-  - Attachments are successfully passed through the extractor and parsed.  
-  - Output includes both email summary and document details in JSON or HTML format.
+- **Correctness & Coverage**  
+  - All emails in the folder are processed reliably  
+  - Attachments (PDFs, DOCX, images) are parsed and extracted  
+  - Summaries include both email metadata and document content details  
 
-- **Clarity of Architecture**  
-  - A clear flowchart (PNG/SVG/Markdown) illustrating each pipeline stage.  
-  - Well-documented README with setup & run instructions.
+- **Architecture Clarity**  
+  - A clear flowchart (PNG, SVG, or Mermaid in Markdown) illustrating each stage  
+  - Well‐structured README with step‐by‐step setup/run guide  
 
 - **Code Quality & Modularity**  
-  - Clean, modular code (Python/Node.js/Java, etc.).  
-  - Proper error-handling for missing fields, corrupt PDFs, network failures.
+  - Clean, maintainable code (Python, Node.js, Java, etc.)  
+  - Robust error handling (missing fields, corrupt files, network issues)  
 
 - **Ease of Deployment**  
-  - Instructions for local setup (e.g., `npm install`, `pip install -r requirements.txt`).  
-  - (Optional) Dockerfile or containerized example.
+  - Simple local setup instructions (`pip install`, `npm install`)  
+  - Bonus: Dockerfile or `docker-compose.yml`  
 
 - **Innovation & UX**  
-  - Bonus for a lightweight web front-end (React/Flask/Express) demonstrating the confirmation UI.  
-  - Interactive elements: allow user to edit extracted metadata before finalizing.
+  - Bonus for a lightweight web front‐end (React/Flask/Express) for manual confirmation/editing of extracted data  
 
 ---
 
 ## 🗂️ Dataset
 
-- A ZIP archive containing sample emails(https://cargoa-my.sharepoint.com/:f:/g/personal/chiefmentor_cargoa_io/EnvyaewKwVNFv5qdmWcNTWsB6n27FESrvxedX5vpQzjfdg?e=msfBCc):  
-  - `emails/sample1.eml`  
-  - `emails/sample2.eml`  
-  - …  
-- Each email may include zero or more attachments (`.pdf`, `.docx`, `.jpeg`).
+A ZIP archive containing sample emails (included in this repo under `/emails`):
 
-> **Note:** You may generate your own test emails or use any open-source email-parsing libraries (e.g., [mailparser](https://github.com/mscdex/mailparser), [Apache Tika](https://tika.apache.org/)).
+- `emails/sample1.eml`  
+- `emails/sample2.eml`  
+- …  
+
+Each may include zero or more attachments (`.pdf`, `.docx`, `.jpeg`).
+
+> **Tip:** You can generate your own test emails or leverage open‐source libraries like [mailparser](https://github.com/mscdex/mailparser) or [Apache Tika](https://tika.apache.org/) for parsing.
 
 ---
 
 ## 📦 Deliverables
 
-Your GitHub repo **must** contain:
+1. **`README.md`** (this file)  
+2. **`flowchart.*`** – Diagram (PNG/SVG/Mermaid) illustrating your end-to-end pipeline  
+3. **Source code** under `/src`  
+4. **Dependency & Run Instructions**, for example:  
+    
+        git clone https://github.com/your-org/your-repo.git
+        cd your-repo
+        pip install -r requirements.txt     # or npm install
+        ./run_agent.sh                      # or npm start
 
-1. `README.md` (this file)  
-2. `flowchart.*` – A diagram (PNG/SVG/Markdown) illustrating your solution pipeline.  
-3. Source code under `/src`  
-4. A script or instructions to install dependencies and run the pipeline, e.g.:  
-   ```bash
-   git clone https://github.com/your-org/your-repo.git
-   cd your-repo
-   pip install -r requirements.txt     # or npm install
-   ./run_agent.sh                      # or npm start
+5. **Sample outputs** for the provided emails under `/output`  
+6. *(Optional)* **Dockerfile** or **`docker-compose.yml`** for containerized setup  
+7. *(Optional)* **Web UI** under `/web` demonstrating manual confirmation/editing  
+
+---
+
+## 🚀 How to Submit
+
+1. **Fork** this repository  
+2. **Implement** your solution, add your flowchart, and update this README  
+3. **Push** to your fork and open a **Pull Request** against `main`  
+4. In your PR description, include:  
+   - A brief overview of your approach  
+   - Any special dependencies or setup steps  
+   - (If applicable) Link to a live demo or screenshot  
+
+---
+
+## 🏅 Evaluation Criteria
+
+| Category                 | Weight |
+| ------------------------ | ------ |
+| **Functionality**        | 40%    |
+| **Architecture Clarity** | 25%    |
+| **Code Quality**         | 15%    |
+| **Ease of Deployment**   | 10%    |
+| **Innovation & UX**      | 10%    |
+
+Winners will be selected based on the combined score across these areas.
+
+---
+
+## 📅 Timeline
+
+- **Kick-off:** May 29, 2025  
+- **Submission Deadline:** June 12, 2025, 23:59 IST  
+- **Winners Announced:** June 16, 2025  
+
+---
+
+## 📜 Rules & Guidelines
+
+- Teams of **1–3** participants  
+- All code must be original or properly attributed  
+- No plagiarism—automated and manual checks will be performed  
+- Keep your fork **public** until winners are announced  
+
+---
+
+## 📚 Resources
+
+- [mailparser (Node.js)](https://github.com/mscdex/mailparser)  
+- [Python `email` library](https://docs.python.org/3/library/email.html)  
+- [Apache Tika](https://tika.apache.org/) for document parsing  
+- [Mermaid](https://mermaid-js.github.io/) or [Graphviz](https://graphviz.org/) for flowcharts  
+
+---
+
+## ❓ Questions?
+
+If you have any questions, please:
+
+- Open an **issue** in this repo  
+- Email us at **hackathon@cargoa.io**  
+
+Good luck, and happy hacking! 🚀  

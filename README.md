@@ -45,7 +45,7 @@ Many enterprises receive dozens (or hundreds) of emails per day, each potentiall
 
 ## 🗂️ Dataset
 
-- A ZIP archive containing sample emails:  
+- A ZIP archive containing sample emails(https://cargoa-my.sharepoint.com/:f:/g/personal/chiefmentor_cargoa_io/EnvyaewKwVNFv5qdmWcNTWsB6n27FESrvxedX5vpQzjfdg?e=msfBCc):  
   - `emails/sample1.eml`  
   - `emails/sample2.eml`  
   - …  

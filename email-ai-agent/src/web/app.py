@@ -6,6 +6,7 @@ from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
 from extract_msg import Message  
+from dotenv import load_dotenv
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent
@@ -17,11 +18,14 @@ from summarizer import EmailSummarizer
 from document_processor import process_attachment
 
 app = Flask(__name__)
+load_dotenv()
+app.secret_key = os.environ.get("SECRET_KEY")
+
 
 
 # Configure paths and allowed extensions
 BASE_DIR = Path(__file__).resolve().parents[2]
-print(f"Base directory: {BASE_DIR}")
+
 EMAILS_DIR = BASE_DIR / "emails"
 OUTPUT_DIR = BASE_DIR / "output"
 ALLOWED_EXTENSIONS = {'eml', 'msg'}

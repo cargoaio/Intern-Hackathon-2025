@@ -9,8 +9,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Tesseract configuration (update path if needed)
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+
 
 def process_attachment(attachment):
     """Process email attachments with maximum reliability"""

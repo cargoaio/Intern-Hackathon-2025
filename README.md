@@ -1,5 +1,3 @@
-
-
 ---
 
 # Advanced Email Processing System 📧✨
@@ -34,15 +32,40 @@ An end-to-end email processing pipeline featuring AI-powered summarization, adva
   - Batch processing
   - JSON results API
 
-## 🏗️ Architecture Deep Dive
-
-<details>
-<summary>Click to expand architecture diagram (Mermaid)</summary>
+## 🏗️ Architecture Overview
 
 ```mermaid
-%% (Diagram unchanged for brevity)
+graph TB
+    A[Email File Upload] --> B[Email Parser]
+    B --> C{Email Type}
+    C -->|.eml| D[EML Parser]
+    C -->|.msg| E[MSG Parser]
+    D --> F[Extract Metadata]
+    E --> F
+    F --> G[Extract Body Content]
+    G --> H[Extract Attachments]
+    H --> I{Attachment Type}
+    I -->|PDF| J[PDF Text Extractor]
+    I -->|DOCX| K[Word Document Parser]
+    I -->|Image| L[OCR Text Extraction]
+    I -->|Other| M[Base64 Storage]
+    J --> N[Compile Email Data]
+    K --> N
+    L --> N
+    M --> N
+    N --> O[AI Summarizer]
+    O --> P[Groq API Call]
+    P --> Q[Generate Summary]
+    Q --> R[JSON Response]
+    R --> S[Web Interface Display]
+    
+    style A fill:
+    style O fill:#c63939
+    style P fill:
+    style Q fill:
+    style R fill:
+    style S fill:
 ```
-</details>
 
 ## 📂 Core Components
 
@@ -208,5 +231,3 @@ MIT License - See [LICENSE](LICENSE) for details.
 Karan Kumar ([karanyadav3775@gmail.com](mailto:karanyadav3775@gmail.com))
 
 ---
-
-Let me know if you want this further shortened, want a different section added, or need the Mermaid diagram included in full!

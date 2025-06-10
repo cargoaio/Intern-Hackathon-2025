@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email AI Processor</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Remove the incorrect CSS link for jsPDF -->
+<!-- Add these correct script tags -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- add css from static -->
+     <!-- Add these right after your other CSS links -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
@@ -54,42 +60,54 @@
         
         <!-- RIGHT PANEL - Results -->
         <div class="right-panel">
-            <div class="panel-header">
-                <h1><i class="fas fa-chart-line"></i> Analysis Results</h1>
-                <p>AI-powered email insights</p>
+    <div class="panel-header">
+        <h1><i class="fas fa-chart-line"></i> Analysis Results</h1>
+        <p>AI-powered email insights</p>
+    </div>
+    
+    <div class="panel-content">
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <strong>Processing your email...</strong>
+            <span>Please wait while AI analyzes the content</span>
+        </div>
+        
+        <div id="no-results" class="no-results">
+            <i class="fas fa-inbox"></i>
+            <h3>Ready to Process</h3>
+            <p>Upload and select an email to see AI analysis results here</p>
+        </div>
+        
+        <div id="results" class="results hidden">
+            <div class="card">
+                <h2><i class="fas fa-brain"></i> AI Summary
+                    <div class="summary-actions">
+                        <button id="edit-summary" class="btn small-btn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button id="save-summary" class="btn small-btn hidden">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button id="export-pdf" class="btn small-btn">
+                            <i class="fas fa-file-pdf"></i> Export
+                        </button>
+                    </div>
+                </h2>
+                <div id="summary" class="summary-box"></div>
             </div>
             
-            <div class="panel-content">
-                <div id="loading" class="loading hidden">
-                    <div class="spinner"></div>
-                    <strong>Processing your email...</strong>
-                    <span>Please wait while AI analyzes the content</span>
-                </div>
-                
-                <div id="no-results" class="no-results">
-                    <i class="fas fa-inbox"></i>
-                    <h3>Ready to Process</h3>
-                    <p>Upload and select an email to see AI analysis results here</p>
-                </div>
-                
-                <div id="results" class="results hidden">
-                    <div class="card">
-                        <h2><i class="fas fa-brain"></i> AI Summary</h2>
-                        <div id="summary" class="summary-box"></div>
-                    </div>
-                    
-                    <div class="card">
-                        <h2><i class="fas fa-envelope"></i> Email Details</h2>
-                        <div id="email-details" class="email-details"></div>
-                    </div>
-                    
-                    <div class="card">
-                        <h2><i class="fas fa-paperclip"></i> Attachments</h2>
-                        <div id="attachments" class="attachments-container"></div>
-                    </div>
-                </div>
+            <div class="card">
+                <h2><i class="fas fa-envelope"></i> Email Details</h2>
+                <div id="email-details" class="email-details"></div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-paperclip"></i> Attachments</h2>
+                <div id="attachments" class="attachments-container"></div>
             </div>
         </div>
+    </div>
+</div>
     </div>
 
     <script>
@@ -127,6 +145,112 @@
             fileInput.files = files;
             uploadFile();
         }
+
+        // Initialize jsPDF when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+
+
+
+    const summaryBox = document.getElementById('summary');
+    const editBtn = document.getElementById('edit-summary');
+    const saveBtn = document.getElementById('save-summary');
+    const exportBtn = document.getElementById('export-pdf');
+    
+    // Edit button functionality
+    editBtn.addEventListener('click', function() {
+        summaryBox.contentEditable = true;
+        summaryBox.classList.add('editable');
+        editBtn.classList.add('hidden');
+        saveBtn.classList.remove('hidden');
+        summaryBox.focus();
+    });
+    
+    // Save button functionality
+    saveBtn.addEventListener('click', function() {
+        summaryBox.contentEditable = false;
+        summaryBox.classList.remove('editable');
+        saveBtn.classList.add('hidden');
+        editBtn.classList.remove('hidden');
+        
+        const emailId = document.getElementById('email-selector').value;
+        const editedSummary = summaryBox.innerHTML;
+        
+        if (emailId) {
+            axios.post('/api/save-summary', {
+                email_id: emailId,
+                summary: editedSummary
+            })
+            .then(() => showFlashMessage('Summary saved successfully!'))
+            .catch(error => showFlashMessage('Failed to save summary: ' + error.message, 'error'));
+        }
+    });
+    
+    // PDF Export functionality
+    exportBtn.addEventListener('click', exportToPDF);
+
+    
+    // ... (your existing edit/save button code)
+    const { jsPDF } = window.jspdf;
+    if (!jsPDF) {
+        console.error("jsPDF library not loaded");
+        showFlashMessage('Error loading jsPDF library', 'error');
+        return;
+    }
+    
+    
+    // Updated PDF export with proper error handling
+    document.getElementById('export-pdf')?.addEventListener('click', function() {
+        try {
+            if (!window.jspdf) {
+                throw new Error("jsPDF library not loaded");
+            }
+            exportToPDF();
+        } catch (error) {
+            console.error("PDF export failed:", error);
+            showFlashMessage('Failed to generate PDF: ' + error.message, 'error');
+        }
+    });
+});
+
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    let yPosition = 20; // Start position
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.text('Email Analysis Report', 105, yPosition, { align: 'center' });
+    yPosition += 15;
+    
+    // Add sections
+    yPosition = addSectionToPDF(doc, 'AI Summary', document.getElementById('summary').innerText, yPosition);
+    yPosition = addSectionToPDF(doc, 'Email Details', document.getElementById('email-details').innerText, yPosition);
+    
+    const attachments = document.getElementById('attachments').innerText;
+    if (attachments.trim() !== "No attachments found in this email") {
+        yPosition = addSectionToPDF(doc, 'Attachments', attachments, yPosition);
+    }
+    
+    // Add footer
+    doc.setFontSize(8);
+    doc.text(`Generated on ${new Date().toLocaleString()}`, 105, 285, { align: 'center' });
+    
+    doc.save('email_analysis_report.pdf');
+}
+
+function addSectionToPDF(doc, title, content, yPosition) {
+    doc.setFontSize(14);
+    doc.text(title, 14, yPosition);
+    doc.setFontSize(10);
+    
+    // Split content into lines that fit the page width
+    const lines = doc.splitTextToSize(content, 180);
+    doc.text(lines, 14, yPosition + 5);
+    
+    // Calculate new yPosition (5mm between sections + content height)
+    return yPosition + 5 + (lines.length * 5);
+}
         
         // Load emails
         function loadEmails() {
@@ -241,6 +365,9 @@
                     <pre>${data.body || 'No content available'}</pre>
                 </div>
             `;
+
+
+
             
             // Enhanced attachments display
             const attachmentsDiv = document.getElementById('attachments');

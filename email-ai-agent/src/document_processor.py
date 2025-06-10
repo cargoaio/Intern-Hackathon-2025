@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
-
+# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 def process_attachment(attachment):
     """Process email attachments with maximum reliability"""
     filename = attachment.get('filename', 'unnamed').lower()

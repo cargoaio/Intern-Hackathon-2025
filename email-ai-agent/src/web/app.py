@@ -62,6 +62,23 @@ def upload_file():
     flash('Invalid file type. Only .eml and .msg files allowed')
     return redirect(url_for('index'))
 
+
+
+
+@app.route('/api/save-summary', methods=['POST'])
+def save_summary():
+    try:
+        data = request.get_json()
+        email_id = data.get('email_id')
+        summary = data.get('summary')
+        
+        # Implement your database update logic here
+        # Example: update_email_summary(email_id, summary)
+        
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 @app.route('/api/emails')
 def get_available_emails():
     """List all available .eml files"""

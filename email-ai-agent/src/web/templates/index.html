@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email AI Processor</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Remove the incorrect CSS link for jsPDF -->
+<!-- Add these correct script tags -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- add css from static -->
+     <!-- Add these right after your other CSS links -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- LEFT PANEL - Controls -->
+        <div class="left-panel">
+            <div class="panel-header">
+                <h1><i class="fas fa-robot"></i> Email AI Processor</h1>
+                <p>Upload and process emails with AI</p>
+            </div>
+            
+            <div class="panel-content">
+                <div id="flash-messages" class="flash-messages"></div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-cloud-upload-alt"></i> Upload Email</h2>
+                    
+
+
+                    <form id="upload-form" enctype="multipart/form-data">
+                        <div class="upload-area" id="upload-area" onclick="fileInput.click()">
+                             <input type="file" name="file" id="file-input" class="file-input" accept=".eml,.msg" required>
+                         <div class="upload-icon">
+                          <i class="fas fa-file-upload"></i>
+                        </div>
+                        <h3>Drop email file here</h3>
+                        <p>or click to browse (.eml, .msg)</p>
+                    </div>
+                        
+                    </form>
+
+                          </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-cogs"></i> Process Email</h2>
+                    <select id="email-selector">
+                        <option value="">Select an email to process...</option>
+                    </select>
+                    <button id="process-btn" class="btn" disabled>
+                        <i class="fas fa-magic"></i> Process with AI
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- RIGHT PANEL - Results -->
+        <div class="right-panel">
+    <div class="panel-header">
+        <h1><i class="fas fa-chart-line"></i> Analysis Results</h1>
+        <p>AI-powered email insights</p>
+    </div>
+    
+    <div class="panel-content">
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <strong>Processing your email...</strong>
+            <span>Please wait while AI analyzes the content</span>
+        </div>
+        
+        <div id="no-results" class="no-results">
+            <i class="fas fa-inbox"></i>
+            <h3>Ready to Process</h3>
+            <p>Upload and select an email to see AI analysis results here</p>
+        </div>
+        
+        <div id="results" class="results hidden">
+            <div class="card">
+                <h2><i class="fas fa-brain"></i> AI Summary
+                    <div class="summary-actions">
+                        <button id="edit-summary" class="btn small-btn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button id="save-summary" class="btn small-btn hidden">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button id="export-pdf" class="btn small-btn">
+                            <i class="fas fa-file-pdf"></i> Export
+                        </button>
+                    </div>
+                </h2>
+                <div id="summary" class="summary-box"></div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-envelope"></i> Email Details</h2>
+                <div id="email-details" class="email-details"></div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-paperclip"></i> Attachments</h2>
+                <div id="attachments" class="attachments-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <script>
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+        uploadFile();
+    }
+});
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
+        });
+        
+        uploadArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            uploadFile();
+        }
+
+        // Initialize jsPDF when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+
+
+
+    const summaryBox = document.getElementById('summary');
+    const editBtn = document.getElementById('edit-summary');
+    const saveBtn = document.getElementById('save-summary');
+    const exportBtn = document.getElementById('export-pdf');
+    
+    // Edit button functionality
+    editBtn.addEventListener('click', function() {
+        summaryBox.contentEditable = true;
+        summaryBox.classList.add('editable');
+        editBtn.classList.add('hidden');
+        saveBtn.classList.remove('hidden');
+        summaryBox.focus();
+    });
+    
+    // Save button functionality
+    saveBtn.addEventListener('click', function() {
+        summaryBox.contentEditable = false;
+        summaryBox.classList.remove('editable');
+        saveBtn.classList.add('hidden');
+        editBtn.classList.remove('hidden');
+        
+        const emailId = document.getElementById('email-selector').value;
+        const editedSummary = summaryBox.innerHTML;
+        
+        if (emailId) {
+            axios.post('/api/save-summary', {
+                email_id: emailId,
+                summary: editedSummary
+            })
+            .then(() => showFlashMessage('Summary saved successfully!'))
+            .catch(error => showFlashMessage('Failed to save summary: ' + error.message, 'error'));
+        }
+    });
+    
+    // PDF Export functionality
+    exportBtn.addEventListener('click', exportToPDF);
+
+    
+    // ... (your existing edit/save button code)
+    const { jsPDF } = window.jspdf;
+    if (!jsPDF) {
+        console.error("jsPDF library not loaded");
+        showFlashMessage('Error loading jsPDF library', 'error');
+        return;
+    }
+    
+    
+    // Updated PDF export with proper error handling
+    document.getElementById('export-pdf')?.addEventListener('click', function() {
+        try {
+            if (!window.jspdf) {
+                throw new Error("jsPDF library not loaded");
+            }
+            exportToPDF();
+        } catch (error) {
+            console.error("PDF export failed:", error);
+            showFlashMessage('Failed to generate PDF: ' + error.message, 'error');
+        }
+    });
+});
+
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    let yPosition = 20; // Start position
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.text('Email Analysis Report', 105, yPosition, { align: 'center' });
+    yPosition += 15;
+    
+    // Add sections
+    yPosition = addSectionToPDF(doc, 'AI Summary', document.getElementById('summary').innerText, yPosition);
+    yPosition = addSectionToPDF(doc, 'Email Details', document.getElementById('email-details').innerText, yPosition);
+    
+    const attachments = document.getElementById('attachments').innerText;
+    if (attachments.trim() !== "No attachments found in this email") {
+        yPosition = addSectionToPDF(doc, 'Attachments', attachments, yPosition);
+    }
+    
+    // Add footer
+    doc.setFontSize(8);
+    doc.text(`Generated on ${new Date().toLocaleString()}`, 105, 285, { align: 'center' });
+    
+    doc.save('email_analysis_report.pdf');
+}
+
+function addSectionToPDF(doc, title, content, yPosition) {
+    doc.setFontSize(14);
+    doc.text(title, 14, yPosition);
+    doc.setFontSize(10);
+    
+    // Split content into lines that fit the page width
+    const lines = doc.splitTextToSize(content, 180);
+    doc.text(lines, 14, yPosition + 5);
+    
+    // Calculate new yPosition (5mm between sections + content height)
+    return yPosition + 5 + (lines.length * 5);
+}
+        
+        // Load emails
+        function loadEmails() {
+            axios.get('/api/emails')
+                .then(response => {
+                    const selector = document.getElementById('email-selector');
+                    while (selector.options.length > 1) {
+                        selector.remove(1);
+                    }
+                    
+                    response.data.forEach(email => {
+                        const option = document.createElement('option');
+                        option.value = email.id;
+                        option.textContent = `${email.filename} (${email.size}, ${email.upload_time})`;
+                        selector.appendChild(option);
+                    });
+                })
+                .catch(error => showFlashMessage('Error loading emails: ' + error.message, 'error'));
+        }
+        
+        function showFlashMessage(message, type = 'success') {
+            const flashDiv = document.getElementById('flash-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flash ${type}`;
+            messageDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            flashDiv.appendChild(messageDiv);
+            
+            setTimeout(() => messageDiv.remove(), 5000);
+        }
+        
+        function uploadFile() {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            axios.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            .then(response => {
+                showFlashMessage('File uploaded successfully!');
+                fileInput.value = '';
+                loadEmails();
+            })
+            .catch(error => showFlashMessage('Upload failed: ' + error.response?.data || error.message, 'error'));
+        }
+        
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (fileInput.files.length) uploadFile();
+        });
+        
+        document.getElementById('email-selector').addEventListener('change', (e) => {
+            document.getElementById('process-btn').disabled = !e.target.value;
+        });
+        
+        document.getElementById('process-btn').addEventListener('click', () => {
+            const emailId = document.getElementById('email-selector').value;
+            if (!emailId) return;
+            
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const noResults = document.getElementById('no-results');
+            
+            loading.classList.remove('hidden');
+            results.classList.add('hidden');
+            noResults.classList.add('hidden');
+            
+            axios.post('/api/process', { email_id: emailId })
+                .then(response => {
+                    displayResults(response.data);
+                    results.classList.remove('hidden');
+                })
+                .catch(error => {
+                    showFlashMessage('Processing failed: ' + (error.response?.data || error.message), 'error');
+                    noResults.classList.remove('hidden');
+                })
+                .finally(() => {
+                    loading.classList.add('hidden');
+                });
+        });
+        
+        function displayResults(data) {
+            // Enhanced summary display
+            document.getElementById('summary').innerHTML = `
+                <h3><i class="fas fa-lightbulb"></i> ${data.summary.status === 'success' ? 'AI Analysis' : 'Analysis Failed'}</h3>
+                <div class="summary-text">${data.summary.summary || data.summary.error}</div>
+                <div class="meta">
+                    <i class="fas fa-robot"></i> Model: ${data.summary.model || 'Unknown'}
+                    <span style="margin-left: 20px;"><i class="fas fa-clock"></i> ${new Date(data.processing_timestamp).toLocaleString()}</span>
+                </div>
+            `;
+            
+            // Enhanced email details
+            const emailFields = [
+                { label: 'From', value: data.email.from, icon: 'user' },
+                { label: 'To', value: data.email.to || 'Not specified', icon: 'users' },
+                { label: 'Subject', value: data.email.subject, icon: 'envelope' },
+                { label: 'Date', value: data.email.date, icon: 'calendar' },
+                { label: 'Source', value: data.source_file, icon: 'file' }
+            ];
+            
+            const fieldsHtml = emailFields.map(field => `
+                <div class="email-field">
+                    <strong><i class="fas fa-${field.icon}"></i> ${field.label}:</strong>
+                    <span>${field.value}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('email-details').innerHTML = `
+                ${fieldsHtml}
+                <div class="email-body">
+                    <h4><i class="fas fa-file-alt"></i> Email Content</h4>
+                    <pre>${data.body || 'No content available'}</pre>
+                </div>
+            `;
+
+
+
+            
+            // Enhanced attachments display
+            const attachmentsDiv = document.getElementById('attachments');
+            if (!data.attachments || data.attachments.length === 0) {
+                attachmentsDiv.innerHTML = `
+                    <div style="text-align: center; color: #6c757d; padding: 40px;">
+                        <i class="fas fa-paperclip" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>No attachments found in this email</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            attachmentsDiv.innerHTML = data.attachments.map(att => `
+                <div class="attachment">
+                    <div class="attachment-header">
+                        <div class="attachment-title">
+                            <i class="fas fa-file-alt"></i>
+                            <span>${att.filename}</span>
+                        </div>
+                        <div class="attachment-type">${att.type}</div>
+                    </div>
+                    ${att.error ? `<div class="error"><i class="fas fa-exclamation-triangle"></i> ${att.error}</div>` : ''}
+                    <div class="attachment-content">
+                        <pre>${att.text || 'No text content could be extracted from this attachment'}</pre>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        loadEmails();
+    </script>
+</body>
+</html>

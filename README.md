@@ -1,11 +1,25 @@
 ---
 
-# Advanced Email Processing System 📧✨
+# AI Email Processing System 📧✨
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/flask-2.0+-green.svg)
 ![Groq](https://img.shields.io/badge/Groq-API-orange)
 ![License](https://img.shields.io/badge/license-MIT-blue)
+
+
+
+[![Website](https://img.shields.io/website?url=https://intern-hackathon-2025.onrender.com/&style=for-the-badge)](https://intern-hackathon-2025.onrender.com/)
+
+## 🚀 Live Demo
+
+Check out the live application: [AI Email Processor](https://intern-hackathon-2025.onrender.com/)
+
+## Preview
+
+<div align="center">
+  <img src="https://drive.google.com/file/d/1v4kUv0bdQu1qIx6m32LzzIdGGcaE79RY/view?usp=sharing" alt="AI Email Processor Preview" width="600px">
+</div>
 
 An end-to-end email processing pipeline featuring AI-powered summarization, advanced attachment parsing, and multi-format support.
 
@@ -135,6 +149,7 @@ def process_email():
 # Installation
 git clone https://github.com/KaranKumar2326/Intern-Hackathon-2025.git
 cd Intern-Hackathon-2025
+cd email-ai-agent
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -143,21 +158,46 @@ pip install -r requirements.txt
 echo "GROQ_API_KEY=your_key_here" > .env
 echo "SECRET_KEY=$(openssl rand -hex 32)" >> .env
 
+Otherwise set above keys manually in .env file.
+
 # Running
-flask run --host=0.0.0.0 --port=5000
+python src\web\app.py
 ```
 
 ### Docker Setup
 
 ```dockerfile
-FROM python:3.8-slim
+FROM python:3.11-slim
+
+# Install Tesseract and system dependencies
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
-    libtesseract-dev
-COPY . /app
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && apt-get clean
+
+# Set working directory
 WORKDIR /app
-RUN pip install -r requirements.txt
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "src.app:app"]
+
+# Copy everything
+COPY . .
+
+# Install Python dependencies
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Set tesseract path as an environment variable
+ENV TESSERACT_PATH=/usr/bin/tesseract
+
+# Expose port
+EXPOSE 8000
+
+# Command to run the app
+# CMD ["gunicorn", "src.web.app:app"]
+CMD ["sh", "-c", "gunicorn src.web.app:app --bind 0.0.0.0:${PORT}"]
+
+
 ```
 
 ## 📊 Sample API Response

@@ -173,7 +173,6 @@ pip install -r requirements.txt
 
 Note: For windows, you need to install tesseract ocr manually .
 
-
 # Running
 For Windows : 
 python src\web\app.py

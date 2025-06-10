@@ -167,6 +167,13 @@ echo "SECRET_KEY=$(openssl rand -hex 32)" >> .env
 
 Otherwise set above keys manually in .env file.
 
+# Install dependencies
+pip install -r requirements.txt
+
+
+Note: For windows, you need to install tesseract ocr manually .
+
+
 # Running
 For Windows : 
 python src\web\app.py

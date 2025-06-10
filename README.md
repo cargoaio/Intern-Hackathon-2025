@@ -18,7 +18,7 @@ Check out the live application: [AI Email Processor](https://intern-hackathon-20
 ## Preview
 
 <div align="center">
-  <img src="https://drive.google.com/file/d/1v4kUv0bdQu1qIx6m32LzzIdGGcaE79RY/view?usp=sharing" alt="AI Email Processor Preview" width="600px">
+  <img src="https://drive.google.com/uc?export=view&id=1v4kUv0bdQu1qIx6m32LzzIdGGcaE79RY" alt="AI Email Processor Preview" width="600px">
 </div>
 
 An end-to-end email processing pipeline featuring AI-powered summarization, advanced attachment parsing, and multi-format support.
@@ -151,8 +151,15 @@ git clone https://github.com/KaranKumar2326/Intern-Hackathon-2025.git
 cd Intern-Hackathon-2025
 cd email-ai-agent
 python -m venv venv
+
+# For Windows: Activate the virtual environment
+# Windows:
+venv\Scripts\activate
+
+# For Linux/macOS: Activate the virtual environment
+# Linux/macOS:
 source venv/bin/activate
-pip install -r requirements.txt
+
 
 # Configuration
 echo "GROQ_API_KEY=your_key_here" > .env
@@ -161,7 +168,11 @@ echo "SECRET_KEY=$(openssl rand -hex 32)" >> .env
 Otherwise set above keys manually in .env file.
 
 # Running
+For Windows : 
 python src\web\app.py
+
+For Linux:
+python src/web/app.py
 ```
 
 ### Docker Setup

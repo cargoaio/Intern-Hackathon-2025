@@ -1,140 +1,284 @@
-# 📬 Email-Folder AI Agent Hackathon
-
-Welcome to the **Email-Folder AI Agent Hackathon**! 🎉 In this challenge, you’ll build an intelligent agent that:
-
-1. Reads customer emails from a designated folder  
-2. Parses sender, subject, body text, and attachments (mostly PDFs)  
-3. Invokes a document‐extraction API or model to pull structured content  
-4. Generates a concise summary of both email context and extracted document details  
-5. (Optional) Presents the summary on a lightweight web front‐end for user confirmation  
-
 ---
 
-## 🏆 Challenge Overview
+# AI Email Processing System 📧✨
 
-Many businesses receive dozens—or even hundreds—of emails per day, each potentially containing valuable documents. Your goal is to automate this pipeline end to end:
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Flask](https://img.shields.io/badge/flask-2.0+-green.svg)
+![Groq](https://img.shields.io/badge/Groq-API-orange)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-1. **Ingest**: Load raw `.eml` or `.msg` files from a given folder  
-2. **Parse**: Extract metadata (sender, subject), body text, and attachments  
-3. **Extract**: Feed attachments into a document‐extraction API or your own model to obtain structured data  
-4. **Summarize & Confirm**: Produce a human‐readable summary (JSON or HTML) of email + document contents, ready for user confirmation via a simple web UI  
-5. **Deliver**: Package your solution into a GitHub repo, complete with a flowchart and clear run instructions  
 
----
 
-## 🎯 What We’re Looking For
+[![Website](https://img.shields.io/website?url=https://intern-hackathon-2025.onrender.com/&style=for-the-badge)](https://intern-hackathon-2025.onrender.com/)
 
-- **Correctness & Coverage**  
-  - All emails in the folder are processed reliably  
-  - Attachments (PDFs, DOCX, images) are parsed and extracted  
-  - Summaries include both email metadata and document content details  
+## 🚀 Live Demo
 
-- **Architecture Clarity**  
-  - A clear flowchart (PNG, SVG, or Mermaid in Markdown) illustrating each stage  
-  - Well‐structured README with step‐by‐step setup/run guide  
+Check out the live application: [AI Email Processor](https://intern-hackathon-2025.onrender.com/)
 
-- **Code Quality & Modularity**  
-  - Clean, maintainable code (Python, Node.js, Java, etc.)  
-  - Robust error handling (missing fields, corrupt files, network issues)  
+## Preview
 
-- **Ease of Deployment**  
-  - Simple local setup instructions (`pip install`, `npm install`)  
-  - Bonus: Dockerfile or `docker-compose.yml`  
+<div align="center">
+  <img src="https://drive.google.com/uc?export=view&id=1v4kUv0bdQu1qIx6m32LzzIdGGcaE79RY" alt="AI Email Processor Preview" width="600px">
+</div>
 
-- **Innovation & UX**  
-  - Bonus for a lightweight web front‐end (React/Flask/Express) for manual confirmation/editing of extracted data  
+An end-to-end email processing pipeline featuring AI-powered summarization, advanced attachment parsing, and multi-format support.
 
----
+## 🌟 Key Features
 
-## 🗂️ Dataset
+- **Multi-Format Email Parsing**
+  - Native `.eml` and Outlook `.msg` support
+  - Metadata extraction (From/To/Subject/Date)
+  - MIME-aware body parsing
 
-A ZIP archive containing sample emails (included in this repo under `/emails`):
+- **AI Summarization**
+  - Groq API integration (Llama 3 70B model)
+  - Structured prompt engineering
+  - Rate-limited API calls
 
-- `emails/sample1.eml`  
-- `emails/sample2.eml`  
-- …  
+- **Smart Attachment Processing**
+  - PDF text extraction (PyPDF2)
+  - Word document parsing (python-docx)
+  - Image OCR (Tesseract)
+  - Graceful fallback handling
 
-Each may include zero or more attachments (`.pdf`, `.docx`, `.jpeg`).
+- **RESTful API**
+  - File upload endpoint
+  - Batch processing
+  - JSON results API
 
-> **Tip:** You can generate your own test emails or leverage open‐source libraries like [mailparser](https://github.com/mscdex/mailparser) or [Apache Tika](https://tika.apache.org/) for parsing.
+## 🏗️ Architecture Overview
 
----
-
-## 📦 Deliverables
-
-1. **`README.md`** (this file)  
-2. **`flowchart.*`** – Diagram (PNG/SVG/Mermaid) illustrating your end-to-end pipeline  
-3. **Source code** under `/src`  
-4. **Dependency & Run Instructions**, for example:  
+```mermaid
+graph TB
+    A[Email File Upload] --> B[Email Parser]
+    B --> C{Email Type}
+    C -->|.eml| D[EML Parser]
+    C -->|.msg| E[MSG Parser]
+    D --> F[Extract Metadata]
+    E --> F
+    F --> G[Extract Body Content]
+    G --> H[Extract Attachments]
+    H --> I{Attachment Type}
+    I -->|PDF| J[PDF Text Extractor]
+    I -->|DOCX| K[Word Document Parser]
+    I -->|Image| L[OCR Text Extraction]
+    I -->|Other| M[Base64 Storage]
+    J --> N[Compile Email Data]
+    K --> N
+    L --> N
+    M --> N
+    N --> O[AI Summarizer]
+    O --> P[Groq API Call]
+    P --> Q[Generate Summary]
+    Q --> R[JSON Response]
+    R --> S[Web Interface Display]
     
-        git clone https://github.com/your-org/your-repo.git
-        cd your-repo
-        pip install -r requirements.txt     # or npm install
-        ./run_agent.sh                      # or npm start
+    style A fill:
+    style O fill:#c63939
+    style P fill:
+    style Q fill:
+    style R fill:
+    style S fill:
+```
 
-5. **Sample outputs** for the provided emails under `/output`  
-6. *(Optional)* **Dockerfile** or **`docker-compose.yml`** for containerized setup  
-7. *(Optional)* **Web UI** under `/web` demonstrating manual confirmation/editing  
+## 📂 Core Components
+
+### `email_parser.py`
+```python
+def parse_email(email_path):
+    """
+    Windows-friendly MIME parser with:
+    - Multi-part email handling
+    - Attachment extraction
+    - Error-resilient decoding
+    """
+```
+
+### `summarizer.py`
+```python
+class EmailSummarizer:
+    """
+    Groq-powered AI summarizer featuring:
+    - Rate-limited API calls (1/sec)
+    - Structured prompt engineering
+    - Error handling with retries
+    """
+```
+
+### `document_processor.py`
+```python
+def process_attachment(attachment):
+    """
+    Universal attachment processor with:
+    - File type detection
+    - PDF/DOCX/Image handling
+    - Cascading fallback logic
+    """
+```
+
+### `app.py`
+```python
+@app.route('/api/process')
+def process_email():
+    """
+    Orchestrates the full pipeline:
+    1. Email parsing
+    2. Attachment processing
+    3. AI summarization
+    4. Result storage
+    """
+```
+
+## 🔌 API Endpoints
+
+| Endpoint             | Method | Description                   |
+|----------------------|--------|-------------------------------|
+| `/upload`            | POST   | Accepts .eml/.msg files       |
+| `/api/process`       | POST   | Triggers email processing     |
+| `/api/results/<id>`  | GET    | Retrieves processed results   |
+| `/api/save-summary`  | POST   | Saves edited summaries        |
+
+## 🚀 Deployment Guide
+
+### Prerequisites
+- Groq API key
+- Tesseract OCR installed
+- Python 3.8+
+
+```bash
+# Installation
+git clone https://github.com/KaranKumar2326/Intern-Hackathon-2025.git
+cd Intern-Hackathon-2025
+cd email-ai-agent
+python -m venv venv
+
+# For Windows: Activate the virtual environment
+# Windows:
+venv\Scripts\activate
+
+# For Linux/macOS: Activate the virtual environment
+# Linux/macOS:
+source venv/bin/activate
+
+
+# Configuration
+echo "GROQ_API_KEY=your_key_here" > .env
+echo "SECRET_KEY=$(openssl rand -hex 32)" >> .env
+
+Otherwise set above keys manually in .env file.
+
+# Running
+For Windows : 
+python src\web\app.py
+
+For Linux:
+python src/web/app.py
+```
+
+### Docker Setup
+
+```dockerfile
+FROM python:3.11-slim
+
+# Install Tesseract and system dependencies
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && apt-get clean
+
+# Set working directory
+WORKDIR /app
+
+# Copy everything
+COPY . .
+
+# Install Python dependencies
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Set tesseract path as an environment variable
+ENV TESSERACT_PATH=/usr/bin/tesseract
+
+# Expose port
+EXPOSE 8000
+
+# Command to run the app
+# CMD ["gunicorn", "src.web.app:app"]
+CMD ["sh", "-c", "gunicorn src.web.app:app --bind 0.0.0.0:${PORT}"]
+
+
+```
+
+## 📊 Sample API Response
+
+```json
+{
+  "processing_timestamp": "2023-11-15T12:34:56",
+  "email": {
+    "from": "sender@example.com",
+    "subject": "Quarterly Report",
+    "date": "Thu, 16 Nov 2023 09:00:00 +0000"
+  },
+  "summary": {
+    "content": "The email discusses Q3 results...",
+    "model": "meta-llama/llama-3-70b",
+    "status": "success"
+  },
+  "attachments": [
+    {
+      "filename": "report.pdf",
+      "type": "pdf",
+      "text": "Extracted PDF content..."
+    }
+  ]
+}
+```
+
+## 🛠️ Development Notes
+
+### Attachment Processing Logic
+
+1. **Primary Detection**:
+    ```python
+    if filename.endswith('.pdf'):
+        return _process_pdf(payload)
+    ```
+2. **Content Sniffing**:
+    ```python
+    if payload.startswith(b'%PDF'):
+        return _process_pdf(payload)
+    ```
+3. **Fallback**:
+    ```python
+    return {
+        "type": "unknown",
+        "error": "Unprocessable format"
+    }
+    ```
+
+### Groq API Integration
+
+```python
+payload = {
+    "model": "meta-llama/llama-3-70b",
+    "messages": [
+        {"role": "system", "content": "You are an email summarization expert"},
+        {"role": "user", "content": formatted_prompt}
+    ],
+    "temperature": 0.3,
+    "max_tokens": 300
+}
+```
+
+## 📜 License
+
+MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-## 🚀 How to Submit
-
-1. **Fork** this repository  
-2. **Implement** your solution, add your flowchart, and update this README  
-3. **Push** to your fork and open a **Pull Request** against `main`  
-4. In your PR description, include:  
-   - A brief overview of your approach  
-   - Any special dependencies or setup steps  
-   - (If applicable) Link to a live demo or screenshot  
+**Maintainer:**  
+Karan Kumar ([karanyadav3775@gmail.com](mailto:karanyadav3775@gmail.com))
 
 ---
-
-## 🏅 Evaluation Criteria
-
-| Category                 | Weight |
-| ------------------------ | ------ |
-| **Functionality**        | 40%    |
-| **Architecture Clarity** | 25%    |
-| **Code Quality**         | 15%    |
-| **Ease of Deployment**   | 10%    |
-| **Innovation & UX**      | 10%    |
-
-Winners will be selected based on the combined score across these areas.
-
----
-
-## 📅 Timeline
-
-- **Kick-off:** May 30, 2025  
-- **Submission Deadline:** June 10, 2025, 23:59 IST  
-- **Winners Announced:** June 16, 2025  
-
----
-
-## 📜 Rules & Guidelines
-
-- Teams of **1** participants  
-- All code must be original or properly attributed  
-- No plagiarism—automated and manual checks will be performed  
-- Keep your fork **public** until winners are announced  
-
----
-
-## 📚 Resources
-
-- [mailparser (Node.js)](https://github.com/mscdex/mailparser)  
-- [Python `email` library](https://docs.python.org/3/library/email.html)  
-- [Apache Tika](https://tika.apache.org/) for document parsing  
-- [Mermaid](https://mermaid-js.github.io/) or [Graphviz](https://graphviz.org/) for flowcharts  
-
----
-
-## ❓ Questions?
-
-If you have any questions, please:
-
-- Open an **issue** in this repo  
-- Email us at **hr@cargoa.io**  
-
-Good luck, and happy hacking! 🚀  
